@@ -12,7 +12,10 @@ import {
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './dtos';
+import { Serialize } from '../interceptors/serialize.interceptor';
+import { UserDto } from './dtos/user.dto';
 
+@Serialize(UserDto)
 @Controller('auth')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -24,6 +27,7 @@ export class UsersController {
 
   @Get(':id')
   async findOneById(@Param('id') id: number): Promise<User> {
+    console.log('Handler is running');
     const user = await this.usersService.findOne(id);
     if (!user) throw new NotFoundException('User with given id not found');
 
