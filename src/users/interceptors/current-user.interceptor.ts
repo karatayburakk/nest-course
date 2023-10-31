@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { UsersService } from '../users.service';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 @Injectable()
 export class CurrentUserInterceptor implements NestInterceptor {
@@ -15,6 +15,7 @@ export class CurrentUserInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Promise<Observable<any>> {
+    console.log('CurrentUser Interceptor Activated');
     const request = context.switchToHttp().getRequest();
     const { userId } = request.session || {};
 
@@ -23,6 +24,11 @@ export class CurrentUserInterceptor implements NestInterceptor {
       request.currentUser = user;
     }
 
-    return next.handle();
+    return next.handle().pipe(
+      map((data) => {
+        console.log('CurrentUser Interceptor Finished, return the response');
+        return data;
+      }),
+    );
   }
 }
